@@ -298,6 +298,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             LOG.debug('vnfd_db %(vnfd_db)s %(attributes)s ',
                       {'vnfd_db': vnfd_db,
                        'attributes': vnfd_db.attributes})
+        else
+            vnfd_db['attributes'] = []
         vnfd_dict = self._make_vnfd_dict(vnfd_db)
         LOG.debug('vnfd_dict %s', vnfd_dict)
         self._cos_db_plg.create_event(
