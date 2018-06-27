@@ -43,7 +43,15 @@ class CommonServicesPluginDb(common_services.CommonServicesPluginBase,
 
     def _make_event_dict(self, event_db, fields=None):
         LOG.debug("Start _make_event_dict")
-        res = dict((key, event_db[key]) for key in EVENT_ATTRIBUTES)
+        LOG.debug('id %s', event_db.get('id'))
+        LOG.debug('id %s', event_db.get('resource_id'))
+        LOG.debug('id %s', event_db.get('resource_type'))
+        LOG.debug('id %s', event_db.get('resource_state'))
+        LOG.debug('id %s', event_db.get('timestamp'))
+        LOG.debug('id %s', event_db.get('event_type'))
+        LOG.debug('id %s', event_db.get('event_details'))
+
+        res = dict((key, event_db[key]) for key in EVENT_ATTRIBUTES if event_db.get(key) is not None)
         return self._fields(res, fields)
 
     def _fields(self, resource, fields):
