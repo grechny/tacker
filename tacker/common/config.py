@@ -58,6 +58,8 @@ core_opts = [
                       "or negative integer means no limit")),
     cfg.HostAddressOpt('host', default=utils.get_hostname(),
                        help=_("The hostname Tacker is running on")),
+    cfg.StrOpt('vnfd_cat_dir', default='/var/lib/tacker/packages/',
+               help=_("The path to VNF catalog")),
 ]
 
 core_cli_opts = [

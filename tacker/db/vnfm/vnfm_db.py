@@ -13,13 +13,14 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-
+import os
 from datetime import datetime
 
 from oslo_db.exception import DBDuplicateEntry
 from oslo_log import log as logging
 from oslo_utils import timeutils
 from oslo_utils import uuidutils
+from oslo_config import cfg
 
 import sqlalchemy as sa
 from sqlalchemy import orm
@@ -47,6 +48,7 @@ _ACTIVE_UPDATE_ERROR_DEAD = (
     constants.PENDING_DELETE, constants.DEAD)
 CREATE_STATES = (constants.PENDING_CREATE, constants.DEAD)
 
+CONF = cfg.CONF
 
 ###########################################################################
 # db tables
@@ -294,7 +296,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             tstamp=vnfd_dict[constants.RES_EVT_CREATED_FLD])
         return vnfd_dict
 
-    def update_vnfd(self, context, vnfd_id,
+    # old version, remove after testing of new one
+    def update_vnfd_internal(self, context, vnfd_id,
                     vnfd):
         with context.session.begin(subtransactions=True):
             vnfd_db = self._get_resource(context, VNFD,
@@ -309,6 +312,27 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                 evt_type=constants.RES_EVT_UPDATE,
                 tstamp=vnfd_dict[constants.RES_EVT_UPDATED_FLD])
         return vnfd_dict
+
+    # new version, with logic for patch
+    def update_vnfd(self, context, vnfd_id, vnfd):
+        upload_folder = cfg.CONF.vnfd_cat_dir % vnfd_id
+        if vnfd:
+            # save temporary file to uploaded dir
+            filename = 'tmp_' % vnfd_id
+            with open(os.path.join(upload_folder, filename), 'wb') as file:
+                file.write(vnfd)
+            # extract and validate CSAR with TOSCA parser
+            tosca = ToscaTemplate(filename, None, True, None, None, upload_folder)
+            # get main template for VNFD attribute
+            f = codecs.open(tosca.path, encoding='utf-8', errors='strict')
+            main_template = f.read()
+            f.close()
+
+            # remove temporary archive
+            os.remove(os.path.join(VNFMPlugin.UPLOAD_FOLDER, filename))
+
+            # update descriptor with VNFD from main template
+            return self.update_vnfd_internal(context, vnfd_id, main_template)
 
     def delete_vnfd(self,
                     context,
