@@ -13,6 +13,7 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
+import codecs
 import os
 from datetime import datetime
 
@@ -22,6 +23,7 @@ from oslo_utils import timeutils
 from oslo_utils import uuidutils
 from oslo_config import cfg
 
+from toscaparser.tosca_template import ToscaTemplate
 import sqlalchemy as sa
 from sqlalchemy import orm
 from sqlalchemy.orm import exc as orm_exc
@@ -71,7 +73,7 @@ class VNFD(model_base.BASE, models_v1.HasId, models_v1.HasTenant,
     mgmt_driver = sa.Column(sa.String(255))
 
     # (key, value) pair to spin up
-    attributes = orm.relationship('VNFDAttribute',
+    cattributes = orm.relationship('VNFDAttribute',
                                   backref='vnfd')
 
     # vnfd template source - inline or onboarded
@@ -242,7 +244,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
 
     def create_vnfd(self, context, vnfd):
         vnfd = vnfd['vnfd']
-        LOG.debug('vnfd %s', vnfd)
+        LOG.debug('Started vnfm_db.create_vnfd for vnfd %s', vnfd)
         tenant_id = self._get_tenant_id_for_create(context, vnfd)
         service_types = vnfd.get('service_types')
         mgmt_driver = vnfd.get('mgmt_driver')
@@ -265,6 +267,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                     deleted_at=datetime.min)
                 context.session.add(vnfd_db)
                 LOG.debug('vnfd_db %s', vnfd_db)
+                LOG.debug('Start to process attributes')
                 for (key, value) in vnfd.get('attributes', {}).items():
                     LOG.debug('<key: %s, value: %s>', key, value)
                     attribute_db = VNFDAttribute(
@@ -275,6 +278,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                     LOG.debug('attribute_db: %s>', attribute_db)
 
                     context.session.add(attribute_db)
+                LOG.debug(' Attributes have been processed ')
+                LOG.debug(' Start to process service_types ')
                 for service_type in (item['service_type']
                                      for item in vnfd['service_types']):
                     service_type_db = ServiceType(
@@ -287,9 +292,10 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             raise exceptions.DuplicateEntity(
                 _type="vnfd",
                 entry=e.columns)
-        LOG.debug('vnfd_db %(vnfd_db)s %(attributes)s ',
-                  {'vnfd_db': vnfd_db,
-                   'attributes': vnfd_db.attributes})
+        if vnfd_db.attributes:
+            LOG.debug('vnfd_db %(vnfd_db)s %(attributes)s ',
+                      {'vnfd_db': vnfd_db,
+                       'attributes': vnfd_db.attributes})
         vnfd_dict = self._make_vnfd_dict(vnfd_db)
         LOG.debug('vnfd_dict %s', vnfd_dict)
         self._cos_db_plg.create_event(
@@ -333,7 +339,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             f.close()
 
             # remove temporary archive
-            os.remove(os.path.join(VNFMPlugin.UPLOAD_FOLDER, filename))
+            upload_folder = cfg.CONF.vnfd_cat_dir % vnfd_id
+            os.remove(os.path.join(upload_folder, filename))
 
             # update descriptor with VNFD from main template
             return self.update_vnfd_internal(context, vnfd_id, main_template)
