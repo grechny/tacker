@@ -40,6 +40,7 @@ def config_opts():
 
 class AlarmReceiver(wsgi.Middleware):
     def process_request(self, req):
+        LOG.debug('Config object: %r', cfg.CONF)
         LOG.debug('Process request: %s', req)
         if req.method != 'POST':
             return
@@ -49,7 +50,6 @@ class AlarmReceiver(wsgi.Middleware):
         prefix, info, params = self.handle_url(req.url)
         auth = cfg.CONF.keystone_authtoken
         LOG.debug('Auth object: %r', auth)
-        LOG.debug('Config object: %r', cfg.CONF)
         token = Token(username=cfg.CONF.alarm_auth.username,
                       password=cfg.CONF.alarm_auth.password,
                       project_name=cfg.CONF.alarm_auth.project_name,
