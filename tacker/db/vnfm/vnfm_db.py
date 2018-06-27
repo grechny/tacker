@@ -206,10 +206,12 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                 for service_type in service_types]
 
     def _make_vnfd_dict(self, vnfd, fields=None):
+        attr_dict = []
+        if vnfd['attributes']:
+            attr_dict = self._make_attributes_dict(vnfd['attributes'])
         res = {
-            'attributes': self._make_attributes_dict(vnfd['attributes']),
-            'service_types': self._make_service_types_list(
-                vnfd.service_types)
+            'attributes': attr_dict,
+            'service_types': self._make_service_types_list(vnfd.service_types)
         }
         key_list = ('id', 'tenant_id', 'name', 'description',
                     'mgmt_driver', 'created_at', 'updated_at',
