@@ -207,7 +207,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
 
     def _make_vnfd_dict(self, vnfd, fields=None):
         attr_dict = []
-        if vnfd['attributes']:
+        if vnfd.get('attributes'):
             attr_dict = self._make_attributes_dict(vnfd['attributes'])
         res = {
             'attributes': attr_dict,
