@@ -176,10 +176,12 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
 
     # ==================================================================================================================
     def create_vnfd(self, context, vnfd):
+        LOG.debug('create_vnfd started')
         vnfd_data = vnfd['vnfd']
         template = vnfd_data['attributes'].get('vnfd')
+        LOG.debug('vnfd: %s', vnfd)
         # if no template in input data (csar uploading)
-        if not isinstance(template, None):
+        if template is not None:
             if isinstance(template, dict):
                 # TODO(sripriya) remove this yaml dump once db supports storing
                 # json format of yaml files in a separate column instead of
@@ -193,6 +195,7 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
                                          'tosca_definitions_version is missing.')
 
             LOG.debug('vnfd %s', vnfd_data)
+
 
         service_types = vnfd_data.get('service_types')
         if not attributes.is_attr_set(service_types):
