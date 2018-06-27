@@ -21,6 +21,7 @@ from tacker.db import types
 
 
 class Event(model_base.BASE):
+
     id = sa.Column(sa.Integer, primary_key=True, nullable=False,
                    autoincrement=True)
     resource_id = sa.Column(types.Uuid, nullable=False)

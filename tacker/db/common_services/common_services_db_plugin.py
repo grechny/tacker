@@ -42,6 +42,7 @@ class CommonServicesPluginDb(common_services.CommonServicesPluginBase,
         return manager.TackerManager.get_plugin()
 
     def _make_event_dict(self, event_db, fields=None):
+        LOG.debug("Start _make_event_dict")
         res = dict((key, event_db[key]) for key in EVENT_ATTRIBUTES)
         return self._fields(res, fields)
 
@@ -56,6 +57,7 @@ class CommonServicesPluginDb(common_services.CommonServicesPluginBase,
                      tstamp, details=""):
         try:
             with context.session.begin(subtransactions=True):
+                LOG.debug("create_event inside context.session")
                 event_db = common_services_db.Event(
                     resource_id=res_id,
                     resource_type=res_type,
@@ -63,11 +65,13 @@ class CommonServicesPluginDb(common_services.CommonServicesPluginBase,
                     event_details=details,
                     event_type=evt_type,
                     timestamp=tstamp)
+                LOG.debug("event_db: %s", event_db)
                 context.session.add(event_db)
         except Exception as e:
             LOG.exception("create event error: %s", str(e))
             raise common_services.EventCreationFailureException(
                 error_str=str(e))
+        LOG.debug("create_event before _make_event_dict")
         return self._make_event_dict(event_db)
 
     @log.log
