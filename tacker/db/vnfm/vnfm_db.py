@@ -292,7 +292,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             raise exceptions.DuplicateEntity(
                 _type="vnfd",
                 entry=e.columns)
-        if vnfd_db.get(attributes):
+        if vnfd_db.get('attributes'):
             LOG.debug('vnfd_db %(vnfd_db)s %(attributes)s ',
                       {'vnfd_db': vnfd_db,
                        'attributes': vnfd_db.attributes})
