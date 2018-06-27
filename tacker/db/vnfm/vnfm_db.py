@@ -264,12 +264,16 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                     template_source=template_source,
                     deleted_at=datetime.min)
                 context.session.add(vnfd_db)
+                LOG.debug('vnfd_db %s', vnfd_db)
                 for (key, value) in vnfd.get('attributes', {}).items():
+                    LOG.debug('<key: %s, value: %s>', key, value)
                     attribute_db = VNFDAttribute(
                         id=uuidutils.generate_uuid(),
                         vnfd_id=vnfd_id,
                         key=key,
                         value=value)
+                    LOG.debug('attribute_db: %s>', attribute_db)
+
                     context.session.add(attribute_db)
                 for service_type in (item['service_type']
                                      for item in vnfd['service_types']):
