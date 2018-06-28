@@ -43,18 +43,21 @@ class CommonServicesPluginDb(common_services.CommonServicesPluginBase,
 
     def _make_event_dict(self, event_db, fields=None):
         LOG.debug("Start _make_event_dict")
-        LOG.debug('id %s', event_db.get('id'))
-        LOG.debug('resource_id %s', event_db.get('resource_id'))
-        LOG.debug('resource_type %s', event_db.get('resource_type'))
-        LOG.debug('resource_state %s', event_db.get('resource_state'))
-        LOG.debug('timestamp %s', event_db.get('timestamp'))
-        LOG.debug('event_type %s', event_db.get('event_type'))
-        LOG.debug('event_details %s', event_db.get('event_details'))
+        LOG.debug('fields: %s', fields)
+        LOG.debug('id: %s', event_db.get('id'))
+        LOG.debug('resource_id: %s', event_db.get('resource_id'))
+        LOG.debug('resource_type: %s', event_db.get('resource_type'))
+        LOG.debug('resource_state: %s', event_db.get('resource_state'))
+        LOG.debug('timestamp: %s', event_db.get('timestamp'))
+        LOG.debug('event_type: %s', event_db.get('event_type'))
+        LOG.debug('event_details: %s', event_db.get('event_details'))
 
         res = dict((key, event_db[key]) for key in EVENT_ATTRIBUTES if event_db.get(key) is not None)
+        LOG.debug('res: %s', res)
         return self._fields(res, fields)
 
     def _fields(self, resource, fields):
+        LOG.debug('getting self._fields: (resource= %s, fields= %s)', resource, fields)
         if fields:
             return dict(((key, item) for key, item in resource.items()
                          if key in fields))
