@@ -308,6 +308,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
             res_state=constants.RES_EVT_ONBOARDED,
             evt_type=constants.RES_EVT_CREATE,
             tstamp=vnfd_dict[constants.RES_EVT_CREATED_FLD])
+        LOG.debug('create_vnfd provide following vnfd dict: %s', vnfd_dict)
         return vnfd_dict
 
     # old version, remove after testing of new one
