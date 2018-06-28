@@ -209,6 +209,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
         attr_dict = []
         if vnfd.get('attributes'):
             attr_dict = self._make_attributes_dict(vnfd['attributes'])
+        else:
+            attr_dict = {'vnfd':'onboarding'}
         res = {
             'attributes': attr_dict,
             'service_types': self._make_service_types_list(vnfd.service_types)
