@@ -328,6 +328,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                 res_state=constants.RES_EVT_NA_STATE,
                 evt_type=constants.RES_EVT_UPDATE,
                 tstamp=vnfd_dict[constants.RES_EVT_UPDATED_FLD])
+            LOG.debug("VNFD has been updated, %s", vnfd_dict)
         return vnfd_dict
 
     # new version, with logic for patch
