@@ -314,8 +314,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
         return vnfd_dict
 
     # old version, remove after testing of new one
-    def update_vnfd_internal(self, context, vnfd_id,
-                    vnfd):
+    def update_vnfd(self, context, vnfd_id, vnfd):
         with context.session.begin(subtransactions=True):
             vnfd_db = self._get_resource(context, VNFD,
                                          vnfd_id)
@@ -332,7 +331,7 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
         return vnfd_dict
 
     # new version, with logic for patch
-    def update_vnfd(self, context, vnfd_id, vnfd):
+    def update_vnfd_new(self, context, vnfd_id, vnfd):
         upload_folder = cfg.CONF.vnfd_cat_dir % vnfd_id
         if vnfd:
             # save temporary file to uploaded dir

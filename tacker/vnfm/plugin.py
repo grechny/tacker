@@ -172,6 +172,7 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
             os.remove(os.path.join(upload_folder, filename))
 
             # update descriptor with VNFD from main template
+
             return super(VNFMPlugin, self).update_vnfd_internal(context, vnfd_id, main_template)
 
     # ==================================================================================================================

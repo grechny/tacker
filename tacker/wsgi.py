@@ -26,7 +26,7 @@ import sys
 import time
 
 import eventlet.wsgi
-# eventlet.patcher.monkey_patch(all=False, socket=True, thread=True)
+#eventlet.patcher.monkey_patch(all=False, socket=True, thread=True)
 from oslo_config import cfg
 import oslo_i18n as i18n
 from oslo_log import log as logging
@@ -354,6 +354,7 @@ class Request(webob.Request):
 
     def get_content_type(self):
         allowed_types = ("application/json")
+        # allowed_types = ("application/json", "application/octet-stream")
         if "Content-Type" not in self.headers:
             LOG.debug("Missing Content-Type")
             return None
