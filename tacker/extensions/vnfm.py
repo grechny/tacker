@@ -237,7 +237,7 @@ RESOURCE_ATTRIBUTE_MAP = {
         },
         'attributes': {
             'allow_post': True,
-            'allow_put': False,
+            'allow_put': True,
             'convert_to': attr.convert_none_to_empty_dict,
             'validate': {'type:dict_or_nodata': None},
             'is_visible': True,

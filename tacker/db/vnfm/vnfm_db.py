@@ -73,7 +73,7 @@ class VNFD(model_base.BASE, models_v1.HasId, models_v1.HasTenant,
     mgmt_driver = sa.Column(sa.String(255))
 
     # (key, value) pair to spin up
-    cattributes = orm.relationship('VNFDAttribute',
+    attributes = orm.relationship('VNFDAttribute',
                                   backref='vnfd')
 
     # vnfd template source - inline or onboarded
@@ -318,6 +318,11 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
         with context.session.begin(subtransactions=True):
             vnfd_db = self._get_resource(context, VNFD,
                                          vnfd_id)
+            #todo: refactor this hack of attributes
+            if vnfd.get('vnfd').get('attributes'):
+                vnfd_db.attributes[0].value = vnfd.get('vnfd').get('attributes').get('vnfd')
+                del vnfd.get('vnfd')['attributes']
+
             vnfd_db.update(vnfd['vnfd'])
             vnfd_db.update({'updated_at': timeutils.utcnow()})
             vnfd_dict = self._make_vnfd_dict(vnfd_db)
