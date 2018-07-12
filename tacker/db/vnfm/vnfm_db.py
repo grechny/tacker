@@ -320,9 +320,16 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
                                          vnfd_id)
             #todo: refactor this hack of attributes
             if vnfd.get('vnfd').get('attributes'):
-                vnfd_db.attributes[0].value = vnfd.get('vnfd').get('attributes').get('vnfd')
+                if len(vnfd_db.attributes) > 0:
+                    vnfd_db.attributes[0].value = vnfd.get('vnfd').get('attributes').get('vnfd')
+                else:
+                    attribute_db = VNFDAttribute(
+                        id=uuidutils.generate_uuid(),
+                        vnfd_id=vnfd_id,
+                        key='vnfd',
+                        value=vnfd.get('vnfd').get('attributes').get('vnfd'))
+                    context.session.add(attribute_db)
                 del vnfd.get('vnfd')['attributes']
-
             vnfd_db.update(vnfd['vnfd'])
             vnfd_db.update({'updated_at': timeutils.utcnow()})
             vnfd_dict = self._make_vnfd_dict(vnfd_db)
