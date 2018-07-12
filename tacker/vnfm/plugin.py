@@ -179,7 +179,8 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
     def create_vnfd(self, context, vnfd):
         LOG.debug('create_vnfd started')
         vnfd_data = vnfd['vnfd']
-        template = vnfd_data['attributes'].get('vnfd')
+        if vnfd_data.get('attributes') is not None:
+            template = vnfd_data['attributes'].get('vnfd')
         LOG.debug('vnfd: %s', vnfd)
         # if no template in input data (csar uploading)
         if template is not None:
