@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+import os
 from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_serialization import jsonutils
@@ -267,7 +268,11 @@ class TOSCAToHOT(object):
             )
 
         try:
-            tosca = tosca_template.ToscaTemplate(parsed_params=parsed_params,
+            path = '/var/lib/tacker/' + self.vnf['vnfd_id'] + '/'
+            if not os.path.isdir(path):
+                path = None
+            tosca = tosca_template.ToscaTemplate(path=path,
+                                                 parsed_params=parsed_params,
                                                  a_file=False,
                                                  yaml_dict_tpl=vnfd_dict)
 

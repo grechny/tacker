@@ -13,13 +13,10 @@
 #    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 #    License for the specific language governing permissions and limitations
 #    under the License.
-import codecs
 import inspect
-import zipfile
 
 import six
 import yaml
-import os
 import eventlet
 from oslo_config import cfg
 from oslo_log import log as logging
@@ -132,8 +129,6 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
 
     supported_extension_aliases = ['vnfm']
 
-
-
     def __init__(self):
         super(VNFMPlugin, self).__init__()
         self._pool = eventlet.GreenPool()
@@ -152,30 +147,6 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
     def spawn_n(self, function, *args, **kwargs):
         self._pool.spawn_n(function, *args, **kwargs)
 
-    # ==================================================================================================================
-    def patch_vnfd(self, context, vnfd_id, file):
-
-        upload_folder = cfg.CONF.vnfd_cat_dir % vnfd_id
-        if file:
-            # save temporary file to uploaded dir
-            filename = 'tmp_' % vnfd_id
-            with open(os.path.join(upload_folder, filename), 'wb') as file:
-                file.write(file)
-            # extract and validate CSAR with TOSCA parser
-            tosca = ToscaTemplate(filename, None, True, None, None, upload_folder)
-            # get main template for VNFD attribute
-            f= codecs.open(tosca.path, encoding='utf-8', errors='strict')
-            main_template = f.read()
-            f.close()
-
-            # remove temporary archive
-            os.remove(os.path.join(upload_folder, filename))
-
-            # update descriptor with VNFD from main template
-
-            return super(VNFMPlugin, self).update_vnfd_internal(context, vnfd_id, main_template)
-
-    # ==================================================================================================================
     def create_vnfd(self, context, vnfd):
         LOG.debug('create_vnfd started')
         vnfd_data = vnfd['vnfd']
