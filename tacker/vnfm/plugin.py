@@ -221,6 +221,8 @@ class VNFMPlugin(vnfm_db.VNFMPluginDb, VNFMMgmtMixin):
 
         vnfd_dict['mgmt_driver'] = toscautils.get_mgmt_driver(
             tosca)
+        if vnfd_dict['mgmt_driver'] is None:
+            vnfd_dict['mgmt_driver'] = 'noop'
 
         if vnfd_dict['mgmt_driver'] not in cfg.CONF.tacker.mgmt_driver:
             LOG.error("Invalid mgmt_driver in TOSCA template")

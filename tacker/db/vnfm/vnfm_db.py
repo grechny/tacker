@@ -252,6 +252,8 @@ class VNFMPluginDb(vnfm.VNFMPluginBase, db_base.CommonDbMixin):
         tenant_id = self._get_tenant_id_for_create(context, vnfd)
         service_types = vnfd.get('service_types')
         mgmt_driver = vnfd.get('mgmt_driver')
+        if mgmt_driver is None:
+            mgmt_driver = 'noop'
         template_source = vnfd.get("template_source")
 
         if (not attributes.is_attr_set(service_types)):
