@@ -292,7 +292,8 @@ class TOSCAToHOT(object):
         toscautils.post_process_template(tosca)
         scaling_policy_names = toscautils.get_scaling_policy(tosca)
         try:
-            translator = tosca_translator.TOSCATranslator(tosca, parsed_params)
+
+            translator = tosca_translator.TOSCATranslator(tosca, parsed_params, None, path)
             heat_template_yaml = translator.translate()
             if nested_resource_name:
                 sub_heat_template_yaml =\
